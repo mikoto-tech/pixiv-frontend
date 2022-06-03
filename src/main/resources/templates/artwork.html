@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html lang="zh-cn" xmlns:th="https://www.thymeleaf.org">
+<head>
+
+    <!--/*@thymesVar id="title" type="java.lang.String"*/-->
+    <title th:text="${title}">Mikoto-Pixiv-Unknown-Artwork</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.staticfile.org/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+</head>
+<body style="background: rgb(13, 17, 23); color: rgb(201, 209, 217);">
+<div class="container mt-3">
+    <!--/*@thymesVar id="image" type="java.lang.String"*/-->
+    <div class="container" th:utext="${image}">
+        <p>如果您看到了此部分的文字 说明我们的服务出现了错误 请联系 mikoto@ungine.cn</p>
+    </div>
+
+    <div class="container">
+        <!--/*@thymesVar id="artworkTitle" type="java.lang.String"*/-->
+        <h1 th:utext="${artworkTitle}">作品标题</h1>
+
+        <!--/*@thymesVar id="description" type="java.lang.String"*/-->
+        <p th:utext="${description}">描述</p>
+
+        <!--/*@thymesVar id="bookmarkCount" type="java.lang.Integer"*/-->
+        <i class="fa-solid fa-bookmark"></i> <span th:utext="${bookmarkCount}">0</span>
+
+        <!--/*@thymesVar id="likeCount" type="java.lang.Integer"*/-->
+        <i class="fa-solid fa-heart"></i> <span th:utext="${likeCount}">0</span>
+
+        <!--/*@thymesVar id="viewCount" type="java.lang.Integer"*/-->
+        <i class="fa-solid fa-eye"></i> <span th:utext="${viewCount}">0</span>
+
+        <!--/*@thymesVar id="author" type="java.lang.String"*/-->
+        <p th:utext="${author}">
+        </p>
+    </div>
+</div>
+</body>
+</html>
