@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html lang="zh-cn" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Mikoto-Pixiv</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div class="container mt-3">
+    <h1>Mikoto-Pixiv</h1>
+    <form action="/search">
+        <div class="form-floating mb-3 mt-3">
+            <input class="form-control" id="s" name="s" placeholder="搜索" type="text">
+            <label for="s">搜索</label>
+        </div>
+
+        <div class="container-fluid row row-cols-md-1 row-cols-md-2 row-cols-lg-3">
+            <button class="btn btn-primary" style="width: 100px;" type="submit">搜索</button>
+
+            <br/>
+
+            <select class="form-select form-select-sm" id="properties" name="properties" style="width: 100px">
+                <option value="bookmarkCount">收藏数</option>
+                <option value="likeCount">点赞数</option>
+                <option value="viewCount">浏览数</option>
+                <option value="artworkId">时间</option>
+            </select>
+
+            <br/>
+
+            <select class="form-select form-select-sm" id="order" name="order" style="width: 200px">
+                <option value="DESC">倒序（从高到低）</option>
+                <option value="ASC">正序（从低到高）</option>
+            </select>
+
+            <br/>
+
+            <input class="form-control" id="page" name="page" placeholder="页数" style="width: 200px" type="number"/>
+        </div>
+    </form>
+</div>
+<br>
+<!--/*@thymesVar id="artworks" type="java.lang.String"*/-->
+<div class="container-fluid row row-cols-md-1 row-cols-md-2 row-cols-lg-3" th:utext="${artworks}">
+    <p>如果您看到了此部分的文字 说明我们的服务出现了错误 请联系 mikoto@ungine.cn</p>
+</div>
+
+<div class="container-fluid row row-cols-md-1 row-cols-md-2 row-cols-lg-3">
+    <!--/*@thymesVar id="page" type="java.lang.String"*/-->
+    <div class="btn-group" th:utext="${page}"></div>
+</div>
+
+<!--/*@thymesVar id="script" type="java.lang.String"*/-->
+<script th:utext="${script}">
+
+</script>
+</body>
+</html>
