@@ -23,7 +23,7 @@ import java.security.spec.InvalidKeySpecException;
  * @date 2022/6/3 17:10
  */
 @Controller
-public class IndexController {
+public class SearchController {
     @Qualifier("databaseConnector")
     DatabaseConnector databaseConnector;
     @Value("${mikoto.frontend.database.address}")
@@ -34,16 +34,36 @@ public class IndexController {
     private String forwardKey;
 
     @Autowired
-    public IndexController(DatabaseConnector databaseConnector) {
+    public SearchController(DatabaseConnector databaseConnector) {
         this.databaseConnector = databaseConnector;
     }
 
     @RequestMapping(
             "/"
     )
-    public String index(Model model) throws GetArtworkException, IOException, InvalidKeySpecException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, WrongSignException {
-        search(model, ";", Sort.Direction.DESC, "bookmarkCount", 1);
-        return "search";
+    public String indexPage1(Model model) throws GetArtworkException, IOException, InvalidKeySpecException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, WrongSignException {
+        return search(model, ";", Sort.Direction.DESC, "bookmarkCount", 1);
+    }
+
+    @RequestMapping(
+            "/index.html"
+    )
+    public String indexPage2(Model model) throws GetArtworkException, IOException, InvalidKeySpecException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, WrongSignException {
+        return search(model, ";", Sort.Direction.DESC, "bookmarkCount", 1);
+    }
+
+    @RequestMapping(
+            "/index"
+    )
+    public String indexPage3(Model model) throws GetArtworkException, IOException, InvalidKeySpecException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, WrongSignException {
+        return search(model, ";", Sort.Direction.DESC, "bookmarkCount", 1);
+    }
+
+    @RequestMapping(
+            "/index.php"
+    )
+    public String indexPage4(Model model) throws GetArtworkException, IOException, InvalidKeySpecException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, WrongSignException {
+        return search(model, ";", Sort.Direction.DESC, "bookmarkCount", 1);
     }
 
     @RequestMapping(
@@ -58,8 +78,9 @@ public class IndexController {
 
         for (Artwork artwork :
                 artworks) {
-            stringBuilder
-                    .append("<div class=\"card\" style=\"width: 300px\"><img class=\"card-img-top\" src=\"")
+            stringBuilder.append("<div class=\"card\" style=\"width: 300px\"><a href=\"/artwork?artworkId=")
+                    .append(artwork.getArtworkId())
+                    .append("\"><img class=\"card-img-top\" src=\"")
                     .append(forwardAddress)
                     .append("/artwork/getImage?key=")
                     .append(forwardKey)
@@ -69,7 +90,7 @@ public class IndexController {
                     .append(artwork.getArtworkTitle())
                     .append("</h4><p class=\"card-text\">")
                     .append(artwork.getAuthorName())
-                    .append("</p></div></div><br>");
+                    .append("</p></div></a></div><br>");
         }
 
         model.addAttribute("artworks", stringBuilder.toString());
