@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  */
 @Controller
 public class ArtworkController {
-    @Qualifier("forwardConnectors")
+    @Qualifier("forwardConnector")
     private final ForwardConnector forwardConnector;
 
     @Value("${mikoto.frontend.forward.address}")
