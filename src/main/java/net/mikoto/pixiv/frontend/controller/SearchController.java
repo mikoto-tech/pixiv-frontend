@@ -1,9 +1,10 @@
 package net.mikoto.pixiv.frontend.controller;
 
 import net.mikoto.pixiv.api.model.Artwork;
+import net.mikoto.pixiv.api.model.ForwardServer;
 import net.mikoto.pixiv.database.connector.DatabaseConnector;
 import net.mikoto.pixiv.database.connector.exception.GetArtworkException;
-import net.mikoto.pixiv.database.connector.exception.WrongSignException;
+import net.mikoto.pixiv.forward.connector.ForwardConnector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,122 +25,54 @@ import java.security.spec.InvalidKeySpecException;
  */
 @Controller
 public class SearchController {
+    private static final String NULL_SEARCH_STRING = ";";
     @Qualifier("databaseConnector")
-    DatabaseConnector databaseConnector;
-    @Value("${mikoto.frontend.database.address}")
+    private final DatabaseConnector databaseConnector;
+    @Qualifier("forwardConnector")
+    private final ForwardConnector forwardConnector;
+    @Value("${mikoto.pixiv.frontend.database.address}")
     private String databaseAddress;
-    @Value("${mikoto.frontend.forward.address}")
-    private String forwardAddress;
-    @Value("${mikoto.frontend.forward.key}")
-    private String forwardKey;
+    @Value("${mikoto.pixiv.frontend.forwardServers}")
+    private String forwardServers;
+    private boolean flag = true;
 
     @Autowired
-    public SearchController(DatabaseConnector databaseConnector) {
+    public SearchController(DatabaseConnector databaseConnector, ForwardConnector forwardConnector) {
         this.databaseConnector = databaseConnector;
+        this.forwardConnector = forwardConnector;
     }
 
     @RequestMapping(
             "/"
     )
-    public String indexPage1(Model model) throws GetArtworkException, IOException, InvalidKeySpecException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, WrongSignException {
-        return search(model, ";", Sort.Direction.DESC, "bookmarkCount", 1);
-    }
-
-    @RequestMapping(
-            "/index.html"
-    )
-    public String indexPage2(Model model) throws GetArtworkException, IOException, InvalidKeySpecException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, WrongSignException {
-        return search(model, ";", Sort.Direction.DESC, "bookmarkCount", 1);
-    }
-
-    @RequestMapping(
-            "/index"
-    )
-    public String indexPage3(Model model) throws GetArtworkException, IOException, InvalidKeySpecException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, WrongSignException {
-        return search(model, ";", Sort.Direction.DESC, "bookmarkCount", 1);
-    }
-
-    @RequestMapping(
-            "/index.php"
-    )
-    public String indexPage4(Model model) throws GetArtworkException, IOException, InvalidKeySpecException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, WrongSignException {
-        return search(model, ";", Sort.Direction.DESC, "bookmarkCount", 1);
+    public String indexPage1(Model model) throws GetArtworkException, IOException, InvalidKeySpecException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+        return search(model, NULL_SEARCH_STRING, Sort.Direction.DESC, "bookmarkCount", 1);
     }
 
     @RequestMapping(
             "/search"
     )
-    public String search(Model model, String s, Sort.Direction order, String properties, Integer page) throws GetArtworkException, IOException, InvalidKeySpecException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, WrongSignException {
+    public String search(Model model, String s, Sort.Direction order, String properties, Integer page) throws GetArtworkException, IOException {
         if (page == null) {
             page = 1;
         }
+        if (flag) {
+            for (String forwardServer :
+                    forwardServers.split(";")) {
+                String[] forwardServerConfig = forwardServer.split(",");
+                forwardConnector.addForwardServer(new ForwardServer(forwardServerConfig[0], Integer.parseInt(forwardServerConfig[1]), forwardServerConfig[2]));
+            }
+            flag = false;
+        }
         Artwork[] artworks = databaseConnector.getArtworks(databaseAddress, s, order, properties, page - 1);
-        StringBuilder stringBuilder = new StringBuilder();
 
-        for (Artwork artwork :
-                artworks) {
-            stringBuilder.append("<div class=\"card\" style=\"width: 300px\"><a href=\"/artwork?artworkId=")
-                    .append(artwork.getArtworkId())
-                    .append("\"><img class=\"card-img-top\" src=\"")
-                    .append(forwardAddress)
-                    .append("/artwork/getImage?key=")
-                    .append(forwardKey)
-                    .append("&url=")
-                    .append(artwork.getIllustUrlRegular())
-                    .append("\" alt=\"Card image\" style=\"width: 100%\" /><div class=\"card-body\"><h4 class=\"card-title\">")
-                    .append(artwork.getArtworkTitle())
-                    .append("</h4><p class=\"card-text\">")
-                    .append(artwork.getAuthorName())
-                    .append("</p></div></a></div><br>");
-        }
-
-        model.addAttribute("artworks", stringBuilder.toString());
-
-        StringBuilder pageHtml = new StringBuilder();
-
-        if (page != 1) {
-            pageHtml.append("<a href=\"/search?s=")
-                    .append(s)
-                    .append("&order=")
-                    .append(order)
-                    .append("&properties=")
-                    .append(properties)
-                    .append("&page=")
-                    .append(page - 1)
-                    .append("\"><button type=\"button\" class=\"btn btn-primary\">上一页</button></a>");
-        }
-
-        pageHtml.append("<a href=\"/search?s=")
-                .append(s)
-                .append("&order=")
-                .append(order)
-                .append("&properties=")
-                .append(properties)
-                .append("&page=")
-                .append(page + 1)
-                .append("\"><button type=\"button\" class=\"btn btn-primary\">下一页</button></a>");
-
-        model.addAttribute("page", pageHtml);
-
-        StringBuilder script = new StringBuilder();
-
-        script.append("document.getElementById(\"properties\").value = \"")
-                .append(properties)
-                .append("\";");
-
-        script.append("document.getElementById(\"order\").value = \"")
-                .append(order)
-                .append("\";");
-
-        script.append("document.getElementById(\"s\").value = \"")
-                .append(s)
-                .append("\";");
-
-        script.append("document.getElementById(\"page\").value = \"")
-                .append(page)
-                .append("\";");
-
-        model.addAttribute("script", script);
+        model.addAttribute("forwardConnector", forwardConnector);
+        model.addAttribute("artworks", artworks);
+        model.addAttribute("notice", "");
+        model.addAttribute("page", page);
+        model.addAttribute("properties", properties);
+        model.addAttribute("order", order);
+        model.addAttribute("s", s);
         return "search";
     }
 }

@@ -12,16 +12,18 @@
 <body style="background: rgb(13, 17, 23); color: rgb(201, 209, 217);">
 <div class="container mt-3">
     <!--/*@thymesVar id="image" type="java.lang.String"*/-->
-    <div class="container" th:utext="${image}">
-
+    <div class="container-fluid col col-sm-2 col-md-3 col-lg-4" th:utext="${image}">
     </div>
 
     <div class="container">
         <!--/*@thymesVar id="artworkTitle" type="java.lang.String"*/-->
-        <h1 th:utext="${artworkTitle}">作品标题</h1>
+        <h1 th:utext="${artworkTitle}">null</h1>
 
         <!--/*@thymesVar id="description" type="java.lang.String"*/-->
-        <p th:utext="${description}">描述</p>
+        <p th:utext="${description}">null</p>
+
+        <!--/*@thymesVar id="tags" type="java.lang.String"*/-->
+        <p th:utext="${tags}"></p>
 
         <!--/*@thymesVar id="bookmarkCount" type="java.lang.Integer"*/-->
         <i class="fa-solid fa-bookmark"></i> <span th:utext="${bookmarkCount}">0</span>
@@ -32,10 +34,19 @@
         <!--/*@thymesVar id="viewCount" type="java.lang.Integer"*/-->
         <i class="fa-solid fa-eye"></i> <span th:utext="${viewCount}">0</span>
 
-        <!--/*@thymesVar id="author" type="java.lang.String"*/-->
-        <p th:utext="${author}">
-        </p>
+        <!--/*@thymesVar id="authorId" type="java.lang.Integer"*/-->
+        <!--/*@thymesVar id="authorName" type="java.lang.String"*/-->
+        <a th:href="@{/author/${authorId}}"><span th:utext="${authorName}"></span></a>
     </div>
+</div>
+
+<div class="container mt-3">
+    <small>
+        <a href="https://github.com/mikoto-tech"
+        ><i class="fa-brands fa-github"></i> Mikoto-Tech</a
+        >
+        2022
+    </small>
 </div>
 </body>
 </html>
