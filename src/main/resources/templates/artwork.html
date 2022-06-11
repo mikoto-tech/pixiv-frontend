@@ -10,33 +10,29 @@
     <link href="https://cdn.staticfile.org/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
 </head>
 <body style="background: rgb(13, 17, 23); color: rgb(201, 209, 217);">
-<div class="container mt-3">
+<div class="container mt-3" th:object="${artwork}">
     <!--/*@thymesVar id="image" type="java.lang.String"*/-->
-    <div class="container-fluid col col-sm-2 col-md-3 col-lg-4" th:utext="${image}">
+    <div class="raw" th:utext="${image}">
     </div>
 
+    <!--/*@thymesVar id="artwork" type="net.mikoto.pixiv.api.model.Artwork"*/-->
     <div class="container">
-        <!--/*@thymesVar id="artworkTitle" type="java.lang.String"*/-->
-        <h1 th:utext="${artworkTitle}">null</h1>
+        <h1 th:utext="${artwork.getArtworkTitle()}">null</h1>
+        <p th:utext="${artwork.getDescription()}">null</p>
+        <p>
+            <span th:each="tag : ${artwork.getTags().split(';')}">
+                <a th:href="'/search?s=' + ${tag}" th:text="${tag}"></a>
+            </span>
+        </p>
 
-        <!--/*@thymesVar id="description" type="java.lang.String"*/-->
-        <p th:utext="${description}">null</p>
+        <i class="fa-solid fa-bookmark"></i> <span th:utext="${artwork.getBookmarkCount()}">0</span>
 
-        <!--/*@thymesVar id="tags" type="java.lang.String"*/-->
-        <p th:utext="${tags}"></p>
-
-        <!--/*@thymesVar id="bookmarkCount" type="java.lang.Integer"*/-->
-        <i class="fa-solid fa-bookmark"></i> <span th:utext="${bookmarkCount}">0</span>
-
-        <!--/*@thymesVar id="likeCount" type="java.lang.Integer"*/-->
-        <i class="fa-solid fa-heart"></i> <span th:utext="${likeCount}">0</span>
+        <i class="fa-solid fa-heart"></i> <span th:utext="${artwork.getLikeCount()}">0</span>
 
         <!--/*@thymesVar id="viewCount" type="java.lang.Integer"*/-->
-        <i class="fa-solid fa-eye"></i> <span th:utext="${viewCount}">0</span>
+        <i class="fa-solid fa-eye"></i> <span th:utext="${artwork.getViewCount()}">0</span>
 
-        <!--/*@thymesVar id="authorId" type="java.lang.Integer"*/-->
-        <!--/*@thymesVar id="authorName" type="java.lang.String"*/-->
-        <a th:href="@{/author/${authorId}}"><span th:utext="${authorName}"></span></a>
+        <a th:href="@{/author/${artwork.getAuthorId()}}"><span th:utext="${artwork.getAuthorName()}"></span></a>
     </div>
 </div>
 

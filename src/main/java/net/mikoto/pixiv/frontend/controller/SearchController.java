@@ -14,10 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
-import java.security.spec.InvalidKeySpecException;
 
 /**
  * @author mikoto
@@ -25,7 +21,6 @@ import java.security.spec.InvalidKeySpecException;
  */
 @Controller
 public class SearchController {
-    private static final String NULL_SEARCH_STRING = ";";
     @Qualifier("databaseConnector")
     private final DatabaseConnector databaseConnector;
     @Qualifier("forwardConnector")
@@ -34,7 +29,6 @@ public class SearchController {
     private String databaseAddress;
     @Value("${mikoto.pixiv.frontend.forwardServers}")
     private String forwardServers;
-    private boolean flag = true;
 
     @Autowired
     public SearchController(DatabaseConnector databaseConnector, ForwardConnector forwardConnector) {
@@ -45,24 +39,32 @@ public class SearchController {
     @RequestMapping(
             "/"
     )
-    public String indexPage1(Model model) throws GetArtworkException, IOException, InvalidKeySpecException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
-        return search(model, NULL_SEARCH_STRING, Sort.Direction.DESC, "bookmarkCount", 1);
+    public String indexPage(Model model) throws GetArtworkException, IOException {
+        return search(model, null, null, null, null);
     }
 
     @RequestMapping(
             "/search"
     )
     public String search(Model model, String s, Sort.Direction order, String properties, Integer page) throws GetArtworkException, IOException {
-        if (page == null) {
-            page = 1;
-        }
-        if (flag) {
+        if (forwardConnector.isEmpty()) {
             for (String forwardServer :
                     forwardServers.split(";")) {
                 String[] forwardServerConfig = forwardServer.split(",");
                 forwardConnector.addForwardServer(new ForwardServer(forwardServerConfig[0], Integer.parseInt(forwardServerConfig[1]), forwardServerConfig[2]));
             }
-            flag = false;
+        }
+        if (s == null) {
+            s = ";";
+        }
+        if (page == null) {
+            page = 1;
+        }
+        if (order == null) {
+            order = Sort.Direction.DESC;
+        }
+        if (properties == null) {
+            properties = "bookmarkCount";
         }
         Artwork[] artworks = databaseConnector.getArtworks(databaseAddress, s, order, properties, page - 1);
 

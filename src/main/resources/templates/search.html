@@ -116,7 +116,7 @@
               alt="ARTWORK_THUMB_IMAGE"
               class="card-img-top"
               style="width: 100%"
-              th:src="${forwardServer.getAddress()} + '/artwork/getImage?key=' + ${forwardServer.getKey()} + '&url=' + ${artwork.getIllustUrlThumb().replace('https://i.pximg.net', '')}"
+              th:src="${forwardServer.getAddress()} + '/artwork/getImage?key=' + ${forwardServer.getKey()} + '&url=' + ${artwork.getIllustUrlThumb()}"
       />
         <div class="card-body">
           <h4 class="card-title" th:text="${artwork.getArtworkTitle()}">
